@@ -9,12 +9,18 @@ Person
 
 
 class Person:
-    def __init__(self, name, nickname=None, spouse=None, parents=None, children=None):
+    def __init__(self, name, nickname=None, spouse=None, parents=None):
         self.name = name
         self.nickname = nickname
-        self.spouse = spouse
-        self.parents = parents
-        self.children = children
+        self.spouse = None
+        self.parents = None
+        self.children = None
+
+        if spouse is not None:
+            self.change_spouse(spouse)
+        if parents is not None:
+            for parent in parents:
+                self.add_parent(parent)
 
     def __str__(self):
         return f'{self.name} ({self.nickname})'
@@ -60,6 +66,13 @@ Children : {str(children).strip("[]").replace("'", "")}
 Parents  : {str(parents).strip("[]").replace("'", "")}'''
 
 
+people = {}
+
+
+def add_person(name, nickname=None, spouse=None, parents=None):
+    people[name] = Person(name, nickname, spouse, parents)
+
+
 def find_siblings(person):
     siblings = []
     for parent in person.parents:
@@ -69,12 +82,17 @@ def find_siblings(person):
     return siblings
 
 
-luke = Person('Luke', 'Frazzer')
-john = Person('John', 'Ratman')
-owl = Person('Alfonso', 'Owl')
-luke.change_spouse(john)
-john.add_child(owl)
+def load_people(filenames):
+    return None
 
-print(luke.get_family())
-print(john.get_family())
-print(owl.get_family())
+
+def save_people():
+    return None
+
+
+add_person('Luke', 'Frazzer')
+add_person('John', 'Ratman', people['Luke'])
+add_person('Alfonso', 'Owl', parents=[people['Luke'], people['John']])
+
+for name in people:
+    print(people[name].get_family())
