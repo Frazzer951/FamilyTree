@@ -141,6 +141,18 @@ def print_menu():
     print("To Save the current tree type:   'save'")
     print("To look at someone else type their name. I.E. 'Luke'")
 
+def print_tree(person):
+    # TODO
+    ''' Example Tree
+    Rob
+    |__________________________
+    |       |      |          |
+    Frazzer-Ratman Displeased-Stonewoot
+    |_______|      |__________|
+    |              |
+    Owl            Ocloud-Cat
+    '''
+    return
 
 if __name__ == '__main__':
     print('Do you want to load a csv with a family tree, or start from the begining?')
