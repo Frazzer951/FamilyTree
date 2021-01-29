@@ -1,10 +1,6 @@
 '''
-
-Person
-    Name
-    Nickname
-    Parents
-
+Author: Luke AKA:Frazzer
+Description: This program will generate a family tree and let you transverse it for add people to it.
 '''
 
 import csv
@@ -72,7 +68,22 @@ people = {}
 
 
 def add_person(name, nickname=None, spouse=None, parents=None):
-    people[name] = Person(name, nickname, spouse, parents)
+
+    _parents = []
+    if spouse not in people:
+        spouse = None
+    else:
+        spouse = people[spouse]
+    if parents is not None:
+        if parents[0] in people:
+            _parents.append(people[parents[0]])
+        if len(parents) > 1:
+            if parents[1] in people:
+                _parents.append(people[parents[1]])
+        if len(_parents) == 0:
+            _parents = None
+
+    people[name] = Person(name, nickname, spouse, _parents)
 
 
 def find_siblings(person):
@@ -94,21 +105,8 @@ def load_people(filename):
             name = row[0]
             nickname = row[1]
             spouse = row[2]
-            parent1 = row[3]
-            parent2 = row[4]
-            parents = []
-            # print(name,nickname,spouse,parent1,parent2)
-            if spouse not in people:
-                spouse = None
-            else:
-                spouse = people[spouse]
-            if parent1 in people:
-                parents.append(people[parent1])
-            if parent2 in people:
-                parents.append(people[parent2])
-            if len(parents) == 0:
-                parents = None
-            #print(name, nickname, spouse, parents)
+            parents = [row[3], row[4]]
+            # print(name, nickname, spouse, parents)
             add_person(name, nickname, spouse, parents)
 
 
@@ -137,16 +135,60 @@ def save_people(people, filename=None):
             csv_writer.writerow(row)
 
 
-'''
-add_person('Luke', 'Frazzer')
-add_person('John', 'Ratman', people['Luke'])
-add_person('Alfonso', 'Owl', parents=[people['Luke'], people['John']])
+def print_menu():
+    print("To Exit type:                    'exit'")
+    print("To Add a new person type:        'new'")
+    print("To Save the current tree type:   'save'")
+    print("To look at someone else type their name. I.E. 'Luke'")
 
-for name in people:
-    print(people[name].get_family())
-'''
 
-load_people('tree.csv')
+if __name__ == '__main__':
+    print('Do you want to load a csv with a family tree, or start from the begining?')
+    print("Type 'csv' to load a csv, or 'new' for a new tree")
+    user_input = input().lower()
 
-for name in people:
-    print(people[name].get_family())
+    if user_input == 'csv':
+        filename = input('Please type the filename for the csv file: ')
+        if '.csv' not in filename:
+            filename += '.csv'
+        print(filename)
+        load_people(filename)
+
+    elif user_input == 'new':
+        # TODO: Needs Implimentation
+        print('new')
+
+    else:
+        print(user_input, 'was not an option')
+        exit()
+
+    current_person = people[list(people.keys())[0]]
+    # print(current_person)
+
+    # for name in people:
+    #    print(people[name].get_family())
+    print(people)
+    while True:
+        print(current_person.get_family())
+
+        print_menu()
+        user_input = input()
+
+        if user_input.lower() == 'exit':
+            exit()
+        elif user_input.lower() == 'new':
+            # TODO: Needs impimentation
+            print('new')
+        elif user_input.lower() == 'save':
+            new_fn = input(
+                'Please enter the filename that you want the tree to be save to: ')
+            if '.csv' not in new_fn:
+                new_fn += '.csv'
+            save_people(new_fn)
+        elif user_input == '':
+            continue
+        else:
+            if user_input in people:
+                current_person = people[user_input]
+            else:
+                print('Unknown command/person!')
