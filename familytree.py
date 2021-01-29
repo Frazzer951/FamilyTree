@@ -7,6 +7,8 @@ Person
 
 '''
 
+import csv
+
 
 class Person:
     def __init__(self, name, nickname=None, spouse=None, parents=None):
@@ -82,17 +84,69 @@ def find_siblings(person):
     return siblings
 
 
-def load_people(filenames):
-    return None
+def load_people(filename):
+    with open(filename, newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in spamreader:
+            if row[0] == 'Name':
+                continue
+
+            name = row[0]
+            nickname = row[1]
+            spouse = row[2]
+            parent1 = row[3]
+            parent2 = row[4]
+            parents = []
+            # print(name,nickname,spouse,parent1,parent2)
+            if spouse not in people:
+                spouse = None
+            else:
+                spouse = people[spouse]
+            if parent1 in people:
+                parents.append(people[parent1])
+            if parent2 in people:
+                parents.append(people[parent2])
+            if len(parents) == 0:
+                parents = None
+            #print(name, nickname, spouse, parents)
+            add_person(name, nickname, spouse, parents)
 
 
-def save_people():
-    return None
+def save_people(people, filename=None):
+    if filename is None:
+        filename = 'tree.csv'
+
+    with open(filename, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile, delimiter=',')
+        csv_writer.writerow(
+            ['Name', 'Nickname', 'Spouse', 'Parent 1', 'Parent 2'])
+        for name in people:
+            person = people[name]
+            row = [person.name, person.nickname]
+            if person.spouse is not None:
+                row.append(person.spouse.name)
+            else:
+                row.append('')
+            if person.parents is not None:
+                row.append(person.parents[0].name)
+                if len(person.parents) > 1:
+                    row.append(person.parents[1].name)
+            else:
+                row.append('')
+                row.append('')
+            csv_writer.writerow(row)
 
 
+'''
 add_person('Luke', 'Frazzer')
 add_person('John', 'Ratman', people['Luke'])
 add_person('Alfonso', 'Owl', parents=[people['Luke'], people['John']])
+
+for name in people:
+    print(people[name].get_family())
+'''
+
+load_people('tree.csv')
 
 for name in people:
     print(people[name].get_family())
